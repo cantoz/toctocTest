@@ -19,11 +19,17 @@ app.get("/", (req, res, next) => {
     res.json({ "message": "Ok" })
 });
 
+
 // Insert here other API endpoints
 //
 // === GET MEMORY ===
-app.get("/get/resource/memory", (req, res) => {
-    var sql = "select * from memory"
+app.get("/get/resource/memory/:minutes", (req, res) => {
+    var minutes = [req.params.minutes]
+
+    var now = minutes === 30 ? Date.now() : Date.now() - (minutes * 6000);
+    var before = now - (30 * 60000);
+
+    var sql = "SELECT * FROM memory WHERE timestamp BETWEEN " + before + " AND " + now
     var params = []
     db.all(sql, params, (err, rows) => {
         if (err) {

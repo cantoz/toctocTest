@@ -10,34 +10,38 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         throw err
     } else {
         console.log('Connected to the SQLite database.')
-        db.run(`CREATE TABLE user (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name text, 
-            email text UNIQUE, 
-            password text, 
-            CONSTRAINT email_unique UNIQUE (email)
-            )`,
-            (err) => {
-                if (err) {
-                    // Table already created
-                } else {
-                    // Table just created, creating some rows
-                    var insert = 'INSERT INTO user (name, email, password) VALUES (?,?,?)'
-                    db.run(insert, ["admin", "admin@example.com", md5("admin123456")])
-                    db.run(insert, ["user", "user@example.com", md5("user123456")])
-                }
-            });
+        // db.run(`CREATE TABLE user (
+        //     id INTEGER PRIMARY KEY AUTOINCREMENT,
+        //     name text, 
+        //     email text UNIQUE, 
+        //     password text, 
+        //     CONSTRAINT email_unique UNIQUE (email)
+        //     )`,
+        //     (err) => {
+        //         if (err) {
+        //             // Table already created
+        //         } else {
+        //             // Table just created, creating some rows
+        //             var insert = 'INSERT INTO user (name, email, password) VALUES (?,?,?)'
+        //             db.run(insert, ["admin", "admin@example.com", md5("admin123456")])
+        //             db.run(insert, ["user", "user@example.com", md5("user123456")])
+        //         }
+        //     });
         db.run(`CREATE TABLE memory (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 hostname text, 
                 memory_usage integer, 
-                timestamp date
+                timestamp datetime
                 )`,
             (err) => {
                 if (err) {
                     // Table already created
+                    console.info('Table already created');
                 } else {
                     // Table just created, creating some rows
+                    console.info('Table just created, creating some rows');
+                    var insert = 'INSERT INTO memory (hostname, memory_usage, timestamp) VALUES (?,?,?)'
+                    // db.run(insert, ["sample", 10000, new Date()])
                 }
             });
     }

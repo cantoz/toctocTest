@@ -1,4 +1,5 @@
 const config = require('config');
+const pretty = require('prettysize');
 var os = require("os");
 var db = require("./database.js");
 var EventEmitter = require("events").EventEmitter;
@@ -24,15 +25,10 @@ ee.on('disconnect', () => {
     console.log('Is disconnected!');
 });
 ee.on('addMetric', async () => {
-    var hostData = {
-        hostname: os.hostname(),
-        memory_usage: os.freemem(),
-        timestamp: Date.now()
-    };
-
+    var newDate = new Date();
+    // var time = newDate.toLocaleTimeString();
     var insert = 'INSERT INTO memory (hostname, memory_usage, timestamp) VALUES (?,?,?)'
-    db.run(insert, [os.hostname(), os.freemem(), Date.now()])
-    console.log('Metric added!', hostData.memory_usage);
+    db.run(insert, [os.hostname(), pretty(os.totalmem() - os.freemem(), { numOnly: true }), newDate])
 });
 ee.on('removeMetric', () => {
     console.log('Metric removed!');
