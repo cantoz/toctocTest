@@ -1,0 +1,6 @@
+{
+    "EVENTEMITTER": {
+        "MIN_DISCONNECT": 30,
+        "ADD_INTERVAL": 1000
+    }
+}
