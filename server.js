@@ -68,6 +68,128 @@ app.post("/get/resource/memory", (req, res, next) => {
     });
 })
 
+// === GET ALL BRANCHES BY BANK ===
+app.get("/get/bank/branches/", (req, res) => {
+    var sql = `SELECT 
+        bk.name as 'Banco',
+        br.address as 'Sucursal'
+        FROM bank bk
+        LEFT JOIN branch_office br
+        ON bk.id = br.bank_id`
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            console.log('ERROR!');
+            res.status(400).json({ "error": err.message });
+            return;
+        }
+        var data = {
+            "message": "success",
+            "data": rows
+        };
+        res.status(200).json(data);
+    });
+});
+
+// === GET ALL REPORTS FROM ONE VIGILANTE ===
+app.get("/get/vigilante/reports/:vigilante", (req, res) => {
+    var vigilante_id = [req.params.vigilante]
+    var sql = `SELECT 
+    e.name as 'Vigilante',
+    r.description as 'Descripcion',
+    r.date as 'Fecha'
+    FROM vigilante v LEFT JOIN report r ON r.vigilante_id = v.id
+    LEFT JOIN employee e ON e.id = v.employee_id
+    WHERE v.id = ` + vigilante_id + ``
+    // ON r.vigilante_id = ` + vigilante_id
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            console.log('ERROR!');
+            res.status(400).json({ "error": err.message });
+            return;
+        }
+        var data = {
+            "message": "success",
+            "data": rows
+        };
+        res.status(200).json(data);
+    });
+});
+
+// === EMPLOYEES BY BANK ===
+app.get("/get/bank/employees", (req, res) => {
+    var sql = `SELECT 
+        bk.name as 'BANCO',
+        COUNT(e.id) as 'Empleados'
+        FROM bank bk
+        INNER JOIN branch_office br ON bk.id = br.bank_id
+        INNER JOIN employment em ON br.id = em.branch_id
+        INNER JOIN employee e ON em.employee_id = e.id
+        GROUP BY br.address`
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            console.log('ERROR!');
+            res.status(400).json({ "error": err.message });
+            return;
+        }
+        var data = {
+            "message": "success",
+            "data": rows
+        };
+        res.status(200).json(data);
+    });
+});
+
+// === ALL EMPLOYEES THAT ARE VIGILANTE ===
+app.get("/get/employees/get-vigilante", (req, res) => {
+    var sql = `SELECT 
+        e.name as 'Empleado'
+        FROM vigilante v
+        INNER JOIN employee e ON e.id = v.employee_id`
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            console.log('ERROR!');
+            res.status(400).json({ "error": err.message });
+            return;
+        }
+        var data = {
+            "message": "success",
+            "data": rows
+        };
+        res.status(200).json(data);
+    });
+});
+
+// === ALL REGISTRATION BY EMPLOYEE ===
+app.get("/get/employees/get-registration/:id", (req, res) => {
+    var employee_id = [req.params.id]
+    var sql = `SELECT 
+        e.name as 'Empleado',
+        reg.type as 'Tipo',
+        reg.time as 'Fecha'
+        FROM register reg
+        LEFT JOIN registration regis ON reg.id = regis.register_id
+        LEFT JOIN employee e ON regis.employee_id = e.id
+        WHERE e.id = ` + employee_id
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            console.log('ERROR!');
+            res.status(400).json({ "error": err.message });
+            return;
+        }
+        var data = {
+            "message": "success",
+            "data": rows
+        };
+        res.status(200).json(data);
+    });
+});
+
+
 // Default response for any other request
 app.use(function (req, res) {
     res.status(404);
